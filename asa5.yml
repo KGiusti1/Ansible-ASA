@@ -1,0 +1,37 @@
+- name: Cisco ASA Misc commands
+  connection: local
+  hosts: cisco-asa
+  gather_facts: false
+  vars:
+    cli:
+      username: "{{ username }}"
+      password: "{{ password }}"
+      host: "{{ ansible_host }}"
+      authorize: yes
+      auth_pass: "{{ auth_pass }}"
+
+  tasks:
+    - name: create VPN Pool on Cisco ASA
+      asa_config:
+        lines: 
+          - ip local pool Ansible_Pool 182.22.4.1-182.22.5.254 mask 255.255.254.0
+        provider: "{{ cli }}"
+      register: new_vpn_pool
+
+    - name: create VPN Pool on Cisco ASA verification
+      debug:
+        var: new_vpn_pool
+
+    - name: Set NTP servers on Cisco ASA
+      asa_config:
+        lines: "{{ ntp_servers }}"
+        before: clear configure ntp
+        match: strict
+        provider: "{{ cli }}"
+      tags: ntp_only
+      register: new_ntp_servers
+      
+
+    - name: create new NTP Servers on Cisco ASA verification
+      debug:
+        var: new_ntp_servers

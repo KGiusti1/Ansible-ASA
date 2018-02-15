@@ -1,0 +1,15 @@
+- name: Cisco ASA Misc commands
+  connection: local
+  hosts: cisco-asa
+  gather_facts: false
+  tasks:
+     
+    - name: Add my Gather NTP info
+      asa_command:
+        commands:
+          - "show run ntp"
+        provider: "{{ asa_cli }}"
+      register: show_ntp
+
+    - debug:
+        msg: "{{ show_ntp.stdout_lines[0] }}"

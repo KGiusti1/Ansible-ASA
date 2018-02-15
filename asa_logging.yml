@@ -1,0 +1,25 @@
+- name: Cisco ASA Misc commands
+  connection: local
+  hosts: cisco-asa
+  gather_facts: false
+  vars:
+    cli:
+      username: "{{ username }}"
+      password: "{{ password }}"
+      host: "{{ ansible_host }}"
+      authorize: yes
+      auth_pass: "{{ auth_pass }}"
+
+  tasks:
+    - name: Set logging on Cisco ASA
+      asa_config:
+        lines:
+          -  "logging {{ item.log_setting }}"
+        provider: "{{ cli }}"
+      tags: logging_only
+      with_items: "{{ asa_logging }}"
+      register: logging_output
+      
+    - name: Verify Cisco ASA log settings
+      debug:
+        var: logging_output

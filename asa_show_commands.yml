@@ -1,0 +1,23 @@
+- name: Cisco ASA Misc commands
+  connection: local
+  hosts: cisco-asa
+  gather_facts: false
+  vars:
+    cli:
+      username: "{{ username }}"
+      password: "{{ password }}"
+      host: "{{ ansible_host }}"
+      authorize: yes
+      auth_pass: "{{ auth_pass }}"
+
+  tasks:
+    - name: show ASA information
+      asa_command:
+        commands:
+          - more system:running-config
+        provider: "{{ cli }}"
+      register: asa_show_run
+
+    - name: ASA running config
+      debug:
+        var: asa_show_run

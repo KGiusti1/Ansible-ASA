@@ -1,0 +1,27 @@
+- name: Cisco ASA Misc commands
+  connection: local
+  hosts: cisco-asa
+  gather_facts: false
+  vars:
+    cli:
+      username: "{{ username }}"
+      password: "{{ password }}"
+      host: "{{ ansible_host }}"
+      authorize: yes
+      auth_pass: "{{ auth_pass }}"
+
+  tasks:
+    - name: Clear NTP servers on Cisco ASA
+      asa_config:
+        lines:
+          - "clear configure ntp"
+        provider: "{{ cli }}"
+     
+    - name: Add my  NTP servers on Cisco ASA
+      asa_config:
+        lines:
+          - "ntp server {{ item.ntp_server }}"
+        after:  "write memory"
+        provider: "{{ cli }}"
+      tags: ntp_only
+      with_items: "{{ ntp_config }}"

@@ -1,0 +1,34 @@
+- name: Cisco ASA Misc commands
+  connection: local
+  hosts: cisco-asa
+  gather_facts: false
+  vars:
+    cli:
+      username: "{{ username }}"
+      password: "{{ password }}"
+      host: "{{ ansible_host }}"
+      authorize: yes
+      auth_pass: "{{ auth_pass }}"
+
+  tasks:
+    - name: create object group
+      asa_config:
+        lines:
+          - network-object host 10.1.0.1
+          - network-object host 10.1.0.2
+          - network-object host 10.1.0.3
+        parents: ['object-group network dummy-group']
+        provider: "{{ cli }}"
+      tags: obj
+
+    - name: show version on Cisco ASA
+      asa_command:
+        commands:
+          - show version
+        provider: "{{ cli }}"
+      register: asa_show_ver
+      tags: show_ver
+
+    - name: Pipe show version output to screen
+      debug:
+        var: asa_show_ver

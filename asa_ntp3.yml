@@ -1,0 +1,23 @@
+- name: Cisco ASA Misc commands
+  connection: local
+  hosts: cisco-asa
+  gather_facts: false
+  vars:
+    cli:
+      username: "{{ username }}"
+      password: "{{ password }}"
+      host: "{{ ansible_host }}"
+      authorize: yes
+      auth_pass: "{{ auth_pass }}"
+
+  tasks:
+     
+    - name: Add my Gather NTP info
+      asa_command:
+        commands:
+          - "show run ntp"
+        provider: "{{ cli }}"
+      register: show_ntp
+
+    - debug:
+        msg: "{{ show_ntp.stdout_lines[0] }}"

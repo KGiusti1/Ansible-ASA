@@ -1,0 +1,25 @@
+- name: Cisco ASA Misc commands
+  connection: local
+  hosts: cisco-asa
+  gather_facts: false
+  vars:
+    cli:
+      username: "{{ username }}"
+      password: "{{ password }}"
+      host: "{{ ansible_host }}"
+      authorize: yes
+      auth_pass: "{{ auth_pass }}"
+
+  tasks:
+    - name: create ACL on Cisco ASA
+      asa_acl:
+        lines:
+          - access-list ACL-ANSIBLE extended permit tcp any any eq 82
+          - access-list ACL-ANSIBLE extended permit tcp any any eq 443
+          - access-list ACL-ANSIBLE extended permit tcp any any eq 97
+          - access-list ACL-ANSIBLE extended permit tcp any any eq 98
+          - access-list ACL-ANSIBLE extended permit tcp any any eq 99
+        before: clear configure access-list ACL-ANSIBLE
+        match: strict
+        replace: block
+        provider: "{{ cli }}"
